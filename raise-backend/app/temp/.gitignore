@@ -1,0 +1,7 @@
+# Ignore all files in temp directory
+*
+
+# Except this .gitignore and .gitkeep
+!.gitignore
+!.gitkeep
+

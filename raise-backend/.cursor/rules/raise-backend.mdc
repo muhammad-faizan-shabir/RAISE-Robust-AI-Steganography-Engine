@@ -1,0 +1,209 @@
+---
+globs:
+alwaysApply: true
+---
+# RAISE Backend Development Rules
+
+## ⛔ CRITICAL RULES
+
+### NO UNNECESSARY DOCUMENTATION FILES
+- **DO NOT** create any .md files for documentation, guides, or explanations
+- **ONLY** README.md and SETUP_GUIDE.md are allowed
+- **DO NOT** create files like:
+  - BUILD_INSTRUCTIONS.md
+  - DEPENDENCY_FIX.md
+  - QUICK_START.md
+  - Any other documentation files
+- If information needs to be documented, add it to the existing README.md or SETUP_GUIDE.md
+- User explicitly does not want extra documentation files
+
+## Python Version
+- **CRITICAL**: This project MUST use Python 3.7 due to SteganoGAN compatibility
+- Always ensure code is Python 3.7 compatible
+- Avoid using features from Python 3.8+
+
+## Code Style
+
+### Type Hints
+- Use type hints for all function parameters and return values
+- Import types from `typing` module for Python 3.7 compatibility
+- Example:
+  ```python
+  from typing import Optional, List, Dict
+  
+  def process_data(data: List[str]) -> Optional[Dict]:
+      pass
+  ```
+
+### Docstrings
+- All functions and classes should have docstrings
+- Use Google-style docstrings format
+- Include Args, Returns, and Raises sections where applicable
+- Example:
+  ```python
+  def embed_message(image_path: str, message: str) -> str:
+      """
+      Embed a secret message into an image.
+      
+      Args:
+          image_path: Path to the input image
+          message: Message to embed
+          
+      Returns:
+          Path to the output image with embedded message
+          
+      Raises:
+          ValueError: If image_path is invalid
+      """
+      pass
+  ```
+
+## Folder Structure
+
+### Directory Layout
+```
+app/
+├── core/           # Core configuration and utilities
+├── models/         # SQLAlchemy ORM models
+├── schemas/        # Pydantic schemas
+├── api/            # API endpoints
+│   └── v1/        # API version 1
+├── services/       # Business logic
+└── celery_app/    # Celery worker and tasks
+```
+
+### Naming Conventions
+- Files: Use snake_case (e.g., `user_service.py`)
+- Classes: Use PascalCase (e.g., `UserService`)
+- Functions: Use snake_case (e.g., `get_user_by_id`)
+- Constants: Use UPPER_SNAKE_CASE (e.g., `MAX_FILE_SIZE`)
+
+## Environment Variables
+
+### Security
+- **NEVER** commit sensitive information to git
+- All secrets, API keys, and credentials MUST be in `.env`
+- Use `.env.example` as a template with placeholder values
+- Always check `.gitignore` includes `.env`
+
+### Required Variables
+See `.env.example` for the complete list of required environment variables.
+
+## Database
+
+### Migrations
+- Use Alembic for all database schema changes
+- Create migrations with: `alembic revision --autogenerate -m "description"`
+- Apply migrations with: `alembic upgrade head`
+- Never modify database schema directly
+
+### Models
+- All models must inherit from `Base` in `app.core.database`
+- Use meaningful relationship names
+- Add `__repr__` methods for debugging
+
+## API Development
+
+### Endpoints
+- All endpoints should be in `app/api/v1/`
+- Use appropriate HTTP methods (GET, POST, PUT, DELETE)
+- Include proper status codes
+- Add docstrings explaining endpoint purpose
+
+### Dependencies
+- Database sessions via `Depends(get_db)`
+- Future auth dependencies will be added to `app/api/deps.py`
+
+### Response Models
+- Always use Pydantic schemas for request/response validation
+- Set `orm_mode = True` for database model responses
+
+## Celery Tasks
+
+### Task Design
+- Keep tasks idempotent when possible
+- Add proper error handling
+- Update task state for long-running operations
+- Use descriptive task names
+
+### Task Organization
+- Task definitions in `app/celery_app/tasks.py`
+- Worker configuration in `app/celery_app/worker.py`
+- Service logic in `app/services/`
+
+## Docker
+
+### Development
+- Use `docker-compose up --build` to start all services
+- Rebuild images after dependency changes
+- Check logs with `docker-compose logs -f [service_name]`
+
+### Container Services
+- `db`: PostgreSQL database
+- `redis`: Redis broker for Celery
+- `api`: FastAPI application
+- `worker`: Celery worker
+
+## Testing (Future)
+- Write tests in `tests/` directory
+- Use pytest for testing
+- Maintain test coverage above 80%
+
+## Git Workflow
+- Create feature branches from main
+- Use descriptive commit messages
+- Keep commits atomic and focused
+- Request reviews before merging
+
+## Common Commands
+
+### Development
+```bash
+# Start all services
+docker-compose up --build
+
+# Run migrations
+docker-compose exec api alembic upgrade head
+
+# Create new migration
+docker-compose exec api alembic revision --autogenerate -m "description"
+
+# View logs
+docker-compose logs -f api
+docker-compose logs -f worker
+
+# Access API container
+docker-compose exec api bash
+
+# Stop all services
+docker-compose down
+```
+
+### Database
+```bash
+# Connect to PostgreSQL
+docker-compose exec db psql -U raise_user -d raise_db
+
+# View tables
+docker-compose exec db psql -U raise_user -d raise_db -c "\dt"
+```
+
+## Error Handling
+- Use appropriate HTTP exceptions from FastAPI
+- Log errors appropriately
+- Return user-friendly error messages
+- Never expose internal errors to clients
+
+## Performance
+- Use connection pooling (already configured)
+- Optimize database queries
+- Use Celery for long-running tasks
+- Consider caching for frequently accessed data
+
+## Security
+- Passwords must be hashed using bcrypt
+- Validate all user inputs
+- Use parameterized queries (SQLAlchemy handles this)
+- Implement rate limiting (future)
+- Keep dependencies updated
+

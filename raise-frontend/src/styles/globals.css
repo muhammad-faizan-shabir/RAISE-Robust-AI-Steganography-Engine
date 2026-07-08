@@ -1,0 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 40 25% 94%; /* Isabelline */
+  --foreground: 240 2% 15%; /* Eerie Black */
+  
+  --primary: 353 29% 44%; /* Cordovan */
+  --primary-foreground: 40 25% 96%;
+  
+  --secondary: 48 20% 78%;
+  --secondary-foreground: 240 2% 15%;
+  
+  --muted: 48 18% 82%;
+  --muted-foreground: 240 2% 35%;
+  
+  --accent: 48 24% 76%;
+  --accent-foreground: 240 2% 15%;
+  
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 98%;
+  
+  --border: 40 15% 82%;
+  --input: 240 8% 25%;
+  --ring: 353 29% 44%;
+  
+  --font-sans: "Open Sans", sans-serif;
+  --font-serif: "Playfair Display", serif;
+  --font-mono: "JetBrains Mono", monospace;
+  --radius: .5rem;
+}
+
+.dark {
+  --background: 240 5% 8%;
+  --foreground: 40 25% 94%;
+  --primary: 353 29% 44%;
+  --primary-foreground: 40 25% 96%;
+  --secondary: 240 5% 15%;
+  --secondary-foreground: 40 25% 90%;
+  --muted: 240 5% 20%;
+  --muted-foreground: 240 5% 60%;
+  --accent: 48 24% 76%;
+  --accent-foreground: 240 2% 15%;
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 240 5% 20%;
+  --input: 240 5% 15%;
+  --ring: 353 29% 44%;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+}
+
